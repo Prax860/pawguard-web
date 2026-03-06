@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PawGuard Web
 
-## Getting Started
+PawGuard Web is the companion web application for the PawGuard mobile app. It serves as the fallback interface for users scanning a pet's unique QR code.
 
-First, run the development server:
+## Architecture & Deep Linking
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. **QR Code Scanning:** The PawGuard mobile app generates QR codes that point to URLs formatted as `https://pawguard.app/pet/{petId}`.
+2. **Web Fallback:** When a user scans the QR code, they are directed to this Next.js web application.
+3. **Data Fetching:** The web app fetches the pet's profile securely from Supabase using the `petId`.
+4. **Deep Link Attempt:** The web app automatically attempts to open the PawGuard mobile app using the deep link URI: `pawguard://pet/{petId}`.
+5. **Graceful Degradation:** If the application is installed, it handles the URI and opens the pet's profile natively. If not, the user remains on the web profile page where they can view the pet's name, breed, photo, and blockchain verification status.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **Styling:** TailwindCSS v4
+- **Database:** Supabase
+- **Package Manager:** Bun
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Setup & Local Development
 
-## Learn More
+This project uses [Bun](https://bun.sh/) for ultra-fast dependency management and execution.
 
-To learn more about Next.js, take a look at the following resources:
+1. **Install Bun** (if not already installed):
+   ```bash
+   curl -fsSL https://bun.sh/install | bash
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Install dependencies:**
+   ```bash
+   bun install
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Environment Setup:**
+   Copy the `.env.example` file to `.env.local` and add your Supabase credentials:
+   ```bash
+   cp .env.example .env.local
+   ```
+   *Note: Ensure you populate `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.*
 
-## Deploy on Vercel
+4. **Run the development server:**
+   ```bash
+   bun run dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment to Vercel
+
+The easiest way to deploy this application is using the Vercel Platform.
+
+1. Push your code to a Git repository (GitHub, GitLab, or BitBucket).
+2. Import the project into Vercel.
+3. In the Vercel project settings, go to **Environment Variables** and add:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+4. Set the **Install Command** to `bun install` if not automatically detected.
+5. Set the **Build Command** to `bun run build`.
+6. Click **Deploy**. Vercel will automatically configure the build pipeline and deploy your application to a global edge network.
